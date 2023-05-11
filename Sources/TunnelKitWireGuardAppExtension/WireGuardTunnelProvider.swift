@@ -12,9 +12,9 @@ import NetworkExtension
 import os
 
 open class WireGuardTunnelProvider: NEPacketTunnelProvider {
-    private var cfg: WireGuard.ProviderConfiguration!
+    public var cfg: WireGuard.ProviderConfiguration!
 
-    private lazy var adapter: WireGuardAdapter = {
+    public lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { logLevel, message in
             wg_log(logLevel.osLogLevel, message: message)
         }
