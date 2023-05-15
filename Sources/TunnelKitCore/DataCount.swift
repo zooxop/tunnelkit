@@ -33,6 +33,28 @@ public struct DataCount: Equatable {
 
     /// Sent bytes count.
     public let sent: UInt
+    
+    /// converts to Data type
+    public var data: Data {
+        var serialized = Data()
+        for value in [received, sent] {
+            var localValue = value
+            let buffer = withUnsafePointer(to: &localValue) {
+                return UnsafeBufferPointer(start: $0, count: 1)
+            }
+            serialized.append(buffer)
+        }
+        return serialized
+    }
+    
+    public init(from data: Data) {
+        self = data.withUnsafeBytes { pointer -> DataCount in
+            // Data is 16 bytes: low 8 = received, high 8 = sent.
+            let received = pointer.load(fromByteOffset: 0, as: UInt.self)
+            let outbound = pointer.load(fromByteOffset: 8, as: UInt.self)
+            return DataCount(received, outbound)
+        }
+    }
 
     public init(_ received: UInt, _ sent: UInt) {
         self.received = received

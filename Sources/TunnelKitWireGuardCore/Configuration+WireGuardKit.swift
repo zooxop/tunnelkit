@@ -30,6 +30,10 @@ extension WireGuard.Configuration {
     public init(wgQuickConfig: String) throws {
         tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: wgQuickConfig)
     }
+    
+    public init(fromUapiConfig: String, basedOn: TunnelConfiguration? = nil) throws {
+        tunnelConfiguration = try TunnelConfiguration(fromUapiConfig: fromUapiConfig, basedOn: basedOn)
+    }
 
     public func asWgQuickConfig() -> String {
         tunnelConfiguration.asWgQuickConfig()
