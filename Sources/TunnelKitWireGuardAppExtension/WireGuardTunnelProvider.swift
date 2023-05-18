@@ -1,3 +1,4 @@
+import TunnelKitCore
 import TunnelKitWireGuardCore
 import TunnelKitWireGuardManager
 import WireGuardKit
@@ -111,12 +112,8 @@ open class WireGuardTunnelProvider: NEPacketTunnelProvider {
         guard let completionHandler = completionHandler else { return }
 
         if messageData.count == 1 && messageData[0] == 0 {
-            adapter.getRuntimeConfiguration { settings in
-                var data: Data?
-                if let settings = settings {
-                    data = settings.data(using: .utf8)!
-                }
-                completionHandler(data)
+            self.getTransferredByteCount { transferredByteCount in
+                completionHandler(transferredByteCount?.data)
             }
         } else {
             completionHandler(nil)
@@ -145,6 +142,24 @@ extension WireGuardTunnelProvider {
 
         // store path for clients
         cfg._appexSetDebugLogPath()
+    }
+}
+
+extension WireGuardTunnelProvider {
+    private func getTransferredByteCount(completionHandler: @escaping (DataCount?) -> Void) {
+        self.adapter.getRuntimeConfiguration { settings in
+            let tunnelConfiguration = self.cfg.configuration.tunnelConfiguration
+            
+            guard let settings = settings,
+                  let runtimeConfig = try? WireGuard.Configuration(fromUapiConfig: settings, basedOn: tunnelConfiguration) else {
+                completionHandler(nil)
+                return
+            }
+            let rxBytesTotal = runtimeConfig.peers.reduce(0) { $0 + ($1.rxBytes ?? 0) }
+            let txBytesTotal = runtimeConfig.peers.reduce(0) { $0 + ($1.txBytes ?? 0) }
+            let transferredByteCount = DataCount(UInt(rxBytesTotal), UInt(txBytesTotal))
+            completionHandler(transferredByteCount)
+        }
     }
 }
 

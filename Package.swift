@@ -116,6 +116,7 @@ let package = Package(
         .target(
             name: "TunnelKitWireGuardCore",
             dependencies: [
+                "TunnelKitCore",
                 "__TunnelKitUtils",
                 "WireGuardKit",
                 "SwiftyBeaver"
