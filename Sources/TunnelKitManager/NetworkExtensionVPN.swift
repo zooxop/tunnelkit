@@ -235,11 +235,11 @@ public class NetworkExtensionVPN: VPN {
 
     private func notifyStatus(_ connection: NETunnelProviderSession) {
         guard let _ = connection.manager.localizedDescription else {
-            log.verbose("Ignoring VPN notification from bogus manager")
+//            log.verbose("Ignoring VPN notification from bogus manager")
             return
         }
         let bundleId = connection.manager.tunnelBundleIdentifier
-        log.debug("VPN status did change (\(bundleId ?? "?")): isEnabled=\(connection.manager.isEnabled), status=\(connection.status.rawValue)")
+//        log.debug("VPN status did change (\(bundleId ?? "?")): isEnabled=\(connection.manager.isEnabled), status=\(connection.status.rawValue)")
 
         var notification = Notification(name: VPNNotification.didChangeStatus)
         notification.vpnBundleIdentifier = bundleId
